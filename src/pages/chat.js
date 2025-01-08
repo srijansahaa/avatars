@@ -2,12 +2,14 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import loader from "../assets/loader.gif";
 
 const Chat = () => {
   const uri = process.env.REACT_APP_ENDPOINT;
   const { chatId } = useParams();
   const avatarVideo = chatId + ".mp4";
   const [loading, setLoading] = useState(true);
+  const [chatLoading, setChatLoading] = useState(false);
   const [sessId, setSessId] = useState("");
   const [dummVid, setDummVid] = useState(null);
   const [input, setInput] = useState("");
@@ -15,6 +17,7 @@ const Chat = () => {
   const [actualVid, setActualVid] = useState(null);
 
   const handleChatMessage = (e) => {
+    setChatLoading(true);
     e.preventDefault();
     setMsgs((prev) => [...prev, { message: input, type: "User" }]);
 
@@ -37,7 +40,7 @@ const Chat = () => {
           type: "Bot",
         }));
         setMsgs((prev) => [...prev, ...newMsgs]);
-
+        setChatLoading(false);
         const checkVideoStatus = () => {
           axios
             .get(`${uri}/stream_actual_video`, {
@@ -59,6 +62,7 @@ const Chat = () => {
             })
             .catch((err) => {
               console.error("Error fetching video status:", err);
+              setChatLoading(false);
             });
         };
 
@@ -109,7 +113,11 @@ const Chat = () => {
     }
   }, []);
 
-  return loading ? null : (
+  return loading ? (
+    <Container className="d-flex justify-content-center">
+      <img src={loader} alt="Loading..." />
+    </Container>
+  ) : (
     <Container style={{ height: "100vh" }}>
       <Row>
         <Col>
@@ -149,6 +157,11 @@ const Chat = () => {
                   {msg.type}: {msg.message}
                 </p>
               ))}
+              {!chatLoading && (
+                <div className="d-flex justify-content-center">
+                  <img src={loader} alt="Loading..." />
+                </div>
+              )}
             </div>
             <Form onSubmit={handleChatMessage}>
               <InputGroup>

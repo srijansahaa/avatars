@@ -1,21 +1,26 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Navbar, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import loader from "../assets/loader.gif";
 
 const Avatars = () => {
   const [avatars, setAvatars] = useState([]);
+  const [loading, setLoading] = useState(true);
   const uri = process.env.REACT_APP_ENDPOINT;
 
-  const getAvatars = () => {
-    axios.get(`${uri}/list_avatar`).then((res) => setAvatars(res.data));
-  };
-
   useEffect(() => {
-    getAvatars();
+    axios.get(`${uri}/list_avatar`).then((res) => {
+      setAvatars(res.data);
+      setLoading(false);
+    });
   }, []);
 
-  return (
+  return loading ? (
+    <Container className="d-flex justify-content-center">
+      <img src={loader} alt="Loading..." />
+    </Container>
+  ) : (
     <Container>
       <p className="highlightText">
         Select from the AI Avatars below to begin your conversation!
