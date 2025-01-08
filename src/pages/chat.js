@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import sample from "../assets/sample.mp4";
 
 const Chat = () => {
   const uri = process.env.REACT_APP_ENDPOINT;
@@ -40,7 +41,7 @@ const Chat = () => {
 
         const checkVideoStatus = () => {
           axios
-            .get(`${uri}/stream_actual_video`, {
+            .get(`${uri}/check_actual_video_status`, {
               params: {
                 avatar_video: avatarVideo,
                 session_id: sessId,
@@ -49,12 +50,22 @@ const Chat = () => {
             .then((res) => {
               if (res.data.status === false) {
                 console.log("Video not ready, retrying...");
-                setTimeout(checkVideoStatus, 3000);
+                setTimeout(checkVideoStatus, 5000);
               } else {
-                console.log("Video is ready, perform your action");
-                const blob = new Blob([res.data], { type: "video/mp4" });
-                const videoUrl = URL.createObjectURL(blob);
-                setActualVid(videoUrl);
+                axios
+                  .get(`${uri}/stream_dummy_video_v2`, {
+                    params: {
+                      avatar_video: avatarVideo,
+                      session_id: sessId,
+                    },
+                  })
+                  .then((res) => {
+                    console.log(res);
+                    console.log("Video is ready, perform your action");
+                    const blob = new Blob([res.data], { type: "video/mp4" });
+                    const videoUrl = URL.createObjectURL(blob);
+                    setActualVid(videoUrl);
+                  });
               }
             })
             .catch((err) => {
@@ -70,43 +81,41 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    if (avatarVideo) {
-      const data = new URLSearchParams();
-      data.append("avatar_video", avatarVideo);
+    const data = new URLSearchParams();
+    data.append("avatar_video", avatarVideo);
 
-      axios
-        .post(`${uri}/create_session`, data, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        })
-        .then((res) => {
-          setSessId(res.data.session_id);
-          axios
-            .get(`${uri}/stream_dummy_video`, {
-              params: {
-                avatar_video: avatarVideo,
-                session_id: res.data.session_id,
-              },
-              responseType: "arraybuffer",
-            })
-            .then((res) => {
-              const blob = new Blob([res.data], { type: "video/mp4" });
-              const videoUrl = URL.createObjectURL(blob);
-              setDummVid(videoUrl);
-              setLoading(false);
-            })
-            .catch((err) => {
-              console.error("Error fetching video:", err);
-              setLoading(false);
-            });
-        })
-        .catch((error) => {
-          setLoading(false);
-          console.error("Error:", error);
-        });
-    }
+    axios
+      .post(`${uri}/create_session`, data, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
+      .then((res) => {
+        setSessId(res.data.session_id);
+        axios
+          .get(`${uri}/stream_dummy_video`, {
+            params: {
+              avatar_video: avatarVideo,
+              session_id: res.data.session_id,
+            },
+            responseType: "arraybuffer",
+          })
+          .then((res) => {
+            const blob = new Blob([res.data], { type: "video/mp4" });
+            const videoUrl = URL.createObjectURL(blob);
+            setDummVid(videoUrl);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.error("Error fetching video:", err);
+            setLoading(false);
+          });
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error:", error);
+      });
   }, []);
 
   return loading ? null : (
@@ -118,7 +127,8 @@ const Chat = () => {
               controls={false}
               playsInline
               autoPlay={true}
-              src={actualVid}
+              // src={actualVid}
+              src={sample}
               className="w-100"
               onEnded={() => setActualVid(null)}
             />
