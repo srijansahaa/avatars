@@ -47,7 +47,6 @@ const Chat = () => {
               },
             })
             .then((res) => {
-              console.log(res);
               if (res.data.status === false) {
                 console.log("Video not ready, retrying...");
                 setTimeout(checkVideoStatus, 3000);
@@ -70,8 +69,6 @@ const Chat = () => {
       });
   };
 
-  console.log(actualVid, dummVid);
-
   useEffect(() => {
     if (avatarVideo) {
       const data = new URLSearchParams();
@@ -90,7 +87,7 @@ const Chat = () => {
             .get(`${uri}/stream_dummy_video`, {
               params: {
                 avatar_video: avatarVideo,
-                session_id: sessId,
+                session_id: res.data.session_id,
               },
               responseType: "arraybuffer",
             })
@@ -122,7 +119,8 @@ const Chat = () => {
               playsInline
               autoPlay={true}
               src={actualVid}
-              className="w-100 h-100"
+              className="w-100"
+              onEnded={() => setActualVid(null)}
             />
           ) : (
             <video
@@ -131,7 +129,7 @@ const Chat = () => {
               playsInline
               autoPlay={true}
               src={dummVid}
-              className="w-100 h-100"
+              className="w-100"
             />
           )}
         </Col>

@@ -9,7 +9,7 @@ function App() {
     <div>
       <Navbar expand="lg" bg="dark" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand href="#home">Avatars</Navbar.Brand>
+          <Navbar.Brand href="/">Avatars</Navbar.Brand>
         </Container>
       </Navbar>
       <Routes>

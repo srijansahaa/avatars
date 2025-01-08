@@ -22,7 +22,7 @@ const Avatars = () => {
       </p>
       <Row xs={1} md={3} className="g-4">
         {avatars.map((ava, index) => (
-          <Col>
+          <Col key={index}>
             <Card className="avatarCards">
               <Card.Img variant="top" src={uri + ava.url} />
               <Card.Body>

@@ -22,10 +22,14 @@
 /* CHAT */
 
 .chat .input-group {
-position: absolute;
-bottom: 27px;
+  position: absolute;
+  bottom: 27px;
 }
 
 .chat .messages {
   width: max-content;
+}
+
+video {
+  height: 80vh;
 }
