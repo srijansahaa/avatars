@@ -157,7 +157,7 @@ const Chat = () => {
                   {msg.type}: {msg.message}
                 </p>
               ))}
-              {!chatLoading && (
+              {chatLoading && (
                 <div className="d-flex justify-content-center">
                   <img src={loader} alt="Loading..." />
                 </div>
